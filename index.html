@@ -12,6 +12,7 @@ window.alert=function(m){toast(String(m==null?'':m))};window.confirm=function(){
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@800&display=swap" rel="stylesheet">
 <title>المدرسة الوطنية الأهلية | المنصة التعليمية</title>
 <style>
 :root{
@@ -601,7 +602,7 @@ th{background:#FAF2FA;color:var(--purple-dark)}.empty-row{text-align:center;colo
 <input id="m-name" placeholder="اسم المعلم"/>
 <input id="m-phone" placeholder="رقم الهاتف"/>
 <input id="m-email" placeholder="البريد الإلكتروني" type="email"/>
-<input id="m-subject" placeholder="المادة/المواد"/>
+<input id="m-subject" type="hidden"/><div class="subj-chips" id="m-subj-box"><span class="sc-lbl">المواد المسندة</span><div class="sc-list" id="m-subj-list"></div><div class="sc-add"><input id="m-subj-input" list="m-subj-dl" placeholder="اكتب اسم المادة"><button type="button" id="m-subj-btn">＋ إضافة</button></div><datalist id="m-subj-dl"></datalist></div>
 <select id="m-branch"><option value="المركز الرئيسي">المركز الرئيسي</option><option value="الملحق">الملحق</option><option value="حول البن">حول البن</option></select>
 <div class="multi-grade-label"><span>الصفوف المسندة (اختار من صف إلى خمسة صفوف)</span><button type="button" class="grade-picker-trigger" id="grade-picker-trigger" onclick="toggleGradePicker()">الصفوف المسندة <span>⌄</span></button><div class="grade-picker" id="grade-picker" style="display:none"><div class="grade-picker-hint">اضغط على الصفوف التي تدرسها، ثم اضغط على «الصفوف المسندة» لإغلاق القائمة.</div><div class="grade-picker-options" id="grade-picker-options"></div></div><div class="selected-grades" id="selected-grades">لم يتم اختيار صفوف بعد</div><select id="m-grades" multiple hidden><option>KJ 1</option><option>KJ 2</option><option>الأول</option><option>الثاني</option><option>الثالث</option><option>الرابع</option><option>الخامس</option><option>السادس</option><option>السابع</option><option>الثامن</option><option>التاسع</option><option>الأول الثانوي</option><option>الثاني الثانوي</option><option>الثالث الثانوي</option></select></div>
 <select id="m-status"><option value="نشط">نشط</option><option value="بانتظار التفعيل">بانتظار التفعيل</option><option value="موقوف">موقوف</option></select>
@@ -670,7 +671,7 @@ th{background:#FAF2FA;color:var(--purple-dark)}.empty-row{text-align:center;colo
 <button onclick="showSupportPanel('sup-ticker',this)">◆ الشريط الإخباري</button>
 <button onclick="showSupportPanel('sup-media',this)">▣ المركز الإعلامي</button>
 </div>
-<div class="panel support-panel active" id="sup-stages"><h3>إعداد المراحل والفصول</h3><p>تتكون المنصة من المرحلة التمهيدية والمرحلة الأساسية (الأول إلى التاسع) والمرحلة الثانوية. يمكن مراجعة الفصول من بند «المراحل والفصول».</p><div class="notice">إضافة فصول أو تغيير بنيتها يتم بالتنسيق مع الدعم الفني للمنصة.</div></div>
+<div class="panel support-panel active" id="sup-stages"><h3>المراحل والفصول</h3><p>نظرة على جميع صفوف المدرسة وعدد الطلاب والمعلمين في كل صف. اضغط على أي صف لعرض طلابه وإدارتهم.</p><div id="stg-overview"></div></div>
 <div class="panel support-panel" id="sup-teachers"><h3>إدارة دليل المعلمين</h3><p>إضافة وتعديل بيانات المعلمين وتوزيعهم على الفروع والصفوف من هذا القسم.</p><div id="settings-teacher-tools"></div><div id="settings-teacher-editor"></div><div id="settings-teacher-profile"></div><div id="settings-teacher-list" class="content-browser"></div></div>
 <div class="panel support-panel" id="sup-curricula"><h3>إضافة كتاب إلى المنهج</h3><div class="form-grid"><select id="sup-c-stage" onchange="populateSupportGrades('sup-c-stage','sup-c-grade')"><option value="prep">المرحلة التمهيدية</option><option value="basic">المرحلة الأساسية</option><option value="high">المرحلة الثانوية</option></select><select id="sup-c-grade"></select><input id="sup-c-subject" placeholder="اسم المادة"/><input id="sup-c-title" placeholder="اسم الكتاب"/><input id="sup-c-file" type="file" accept="application/pdf"/></div><button class="action-btn" onclick="saveCurriculumBook()">حفظ الكتاب</button><p class="muted-note">يمكن إضافة من 1 إلى 20 كتاباً لكل فصل دراسي.</p></div>
 <div class="panel support-panel" id="sup-videos"><h3>إضافة فيديو تعليمي</h3><div class="form-grid"><select id="sup-v-stage" onchange="populateSupportGrades('sup-v-stage','sup-v-grade')"><option value="prep">المرحلة التمهيدية</option><option value="basic">المرحلة الأساسية</option><option value="high">المرحلة الثانوية</option></select><select id="sup-v-grade"></select><input id="sup-v-subject" placeholder="المادة"/><input id="sup-v-title" placeholder="اسم الفيديو"/><input id="sup-v-url" placeholder="رابط الفيديو"/></div><button class="action-btn" onclick="saveVideo()">إضافة الفيديو</button></div>
@@ -2835,5 +2836,159 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){const m=document.ge
   const r=document.querySelector('.sidebar .nav[data-view="access-control"]');if(r&&!document.querySelector('.sidebar .nav[data-view="staff-roles"]')){const b=document.createElement('button');b.className='nav';b.dataset.view='staff-roles';b.innerHTML='<span class="ico"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+((window.SCHOOL_ICONS||{}).admin||'')+'</svg></span>المستخدمون والصلاحيات';b.addEventListener('click',()=>{show('staff-roles');try{closeDrawer()}catch(e){}});r.after(b)}
   try{applyRole()}catch(e){}}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,30));else setTimeout(init,30);
+})();
+</script>
+<style id="tres-styles">
+.tres{display:grid;gap:12px;margin:6px 0 16px}
+.tres-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tres-meta label{display:grid;gap:6px;font-weight:800;font-size:13px;color:#5A1C5E}
+.tres-meta select{width:100%}
+.tres-note{background:#F5EAF6;border-radius:14px;padding:10px 14px;font-weight:700;color:#3A1240;font-size:13.5px;line-height:1.8}
+.tres-list{display:grid;gap:8px}
+.tres-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1.5px solid #EFE6F2;border-radius:14px;padding:8px 12px}
+.tres-row b{font-size:14.5px;color:#2A2233}.tres-row small{display:block;color:#6b5f78;font-weight:700;font-size:12px}
+.tres-row input{width:84px!important;min-width:0!important;flex:0 0 84px;text-align:center;font-weight:800;padding:8px!important}
+.tres-row.bad{border-color:#C0262E}.tres-row.lock{opacity:.6}.tres-row .lk{font-size:12px;font-weight:800;color:#A3560C}
+.tres-sum{font-weight:800;color:#5A1C5E;font-size:14px}
+body.role-teacher #sup-results>.form-grid,body.role-teacher #sup-results>.action-btn,body.role-teacher #sup-results>#res-period,body.role-teacher #sup-results #res-marks{display:none!important}
+.rs-missing{background:#FFF8EE;color:#7A4108;padding:8px 14px;font-size:12.5px;font-weight:700;border-top:1px solid #F6E3C8}
+</style>
+<script id="tres-script">
+(function(){
+ const $=id=>document.getElementById(id);
+ const PERIODS=['الشهر الأول','الشهر الثاني','الشهر الثالث','نصف العام','الشهر الرابع','الشهر الخامس','آخر العام'];
+ const SUBJ=['الرياضيات','اللغة العربية','العلوم','التربية الإسلامية','اللغة الإنجليزية','الاجتماعيات'];
+ const KEY='wataniya_published_results',RK='wataniya_students_v1';
+ const split=v=>String(v||'').split(/[,،\n]/).map(x=>x.trim()).filter(Boolean);
+ const gradeSubjects=g=>{const s=[...new Set(readStore('wataniya_schedule').filter(x=>x.grade===g).map(x=>x.subject))];return s.length?s:SUBJ};
+ const grade=p=>p>=90?'ممتاز':p>=80?'جيد جداً':p>=65?'جيد':p>=50?'مقبول':'ضعيف';
+ const tSess=()=>readJsonLocal(examSessionKey,{})||{};
+ window.teacherSubjects=()=>split(tSess().subject);
+ window.teacherGrades=()=>split(tSess().grades);
+ function summarize(x){const need=gradeSubjects(x.grade),have=(x.marks||[]).filter(m=>m.mark!==''&&m.mark!=null);const mx=x.max||20;
+  if(!have.length)return x.period;const tot=have.reduce((a,m)=>a+(+m.mark),0),pct=Math.round(tot/(mx*have.length)*100);
+  const missing=need.filter(s=>!have.some(m=>m.subject===s));return missing.length?`${x.period}: رُصدت ${have.length} من ${need.length} مواد`:`${x.period}: ${pct}% — ${grade(pct)}`}
+ window.resultSummary=summarize;
+ /* لوحة المعلم: رصد مادته لطلاب الصف */
+ function build(){const panel=$('sup-results');if(!panel||currentRole()!=='teacher')return;let box=$('tres');
+  if(!box){box=document.createElement('div');box.id='tres';box.className='tres';panel.querySelector('p').after(box);panel.querySelector('h3').textContent='رصد نتائج مادتي';panel.querySelector('p').textContent='اختر الصف والفترة، ثم اكتب درجة مادتك لكل طالب. تُجمع درجات جميع المواد في نتيجة واحدة للطالب، ولا تظهر إلا بعد اعتماد الإدارة.'}
+  const subs=teacherSubjects(),grs=teacherGrades();
+  if(!subs.length){box.innerHTML='<div class="tres-note">لم تُحدَّد لك مادة بعد. يرجى مراجعة الإدارة لإضافة موادك وصفوفك في دليل المعلمين.</div>';return}
+  const cur={g:$('tr-g')?.value,p:$('tr-p')?.value,s:$('tr-s')?.value,m:$('tr-m')?.value};
+  const gl=grs.length?grs:allGrades;
+  box.innerHTML=`<div class="tres-meta"><label>الصف<select id="tr-g">${gl.map(g=>`<option ${g===cur.g?'selected':''}>${esc(g)}</option>`).join('')}</select></label><label>الفترة<select id="tr-p">${PERIODS.map(p=>`<option ${p===cur.p?'selected':''}>${p}</option>`).join('')}</select></label><label>المادة<select id="tr-s">${subs.map(s=>`<option ${s===cur.s?'selected':''}>${esc(s)}</option>`).join('')}</select></label><label>الدرجة العظمى<select id="tr-m"></select></label></div><div class="tres-list" id="tr-list"></div><div class="tres-sum" id="tr-sum"></div><button type="button" class="action-btn" id="tr-save">حفظ الدرجات وإرسالها للاعتماد</button>`;
+  const defMax=p=>/العام/.test(p)?100:20;
+  const fillMax=()=>{const p=$('tr-p').value,ex=readStore(KEY).find(x=>x.grade===$('tr-g').value&&x.period===p&&x.max);const m=ex?ex.max:defMax(p);$('tr-m').innerHTML=[10,20,30,40,50,100].map(v=>`<option ${v===m?'selected':''}>${v}</option>`).join('');$('tr-m').disabled=!!ex};
+  fillMax();if(cur.m&&!$('tr-m').disabled)$('tr-m').value=cur.m;list();
+  ['tr-g','tr-p','tr-s'].forEach(i=>$(i).onchange=()=>{if(i!=='tr-s')fillMax();list()});$('tr-m').onchange=list;$('tr-save').onclick=save}
+ function list(){const g=$('tr-g').value,p=$('tr-p').value,sub=$('tr-s').value,mx=+$('tr-m').value,all=readStore(KEY);
+  const st=readStore(RK).filter(x=>x.grade===g);
+  $('tr-list').innerHTML=st.length?st.map(x=>{const r=all.find(y=>normId(y.identifier)===normId(x.id)&&y.period===p&&y.status!=='rejected');const m=r&&(r.marks||[]).find(m=>m.subject===sub);const lock=r&&r.status==='approved';
+   return `<div class="tres-row ${lock?'lock':''}"><div><b>${esc(x.name)}</b><small>رقم الجلوس ${esc(x.id)}${lock?' · <span class="lk">معتمدة</span>':''}</small></div><input type="number" inputmode="decimal" min="0" max="${mx}" step="0.5" data-id="${esc(x.id)}" value="${m?esc(m.mark):''}" ${lock?'disabled':''} placeholder="من ${mx}"></div>`}).join(''):'<div class="tres-note">لا يوجد طلاب مسجلون في هذا الصف.</div>';
+  $('tr-list').querySelectorAll('input').forEach(i=>i.oninput=chk);chk()}
+ function chk(){const mx=+$('tr-m').value;let n=0,t=0;$('tr-list').querySelectorAll('input').forEach(i=>{const v=i.value===''?null:+i.value;i.parentElement.classList.toggle('bad',v!=null&&(v<0||v>mx));if(v!=null){n++;t+=v}});const all=$('tr-list').querySelectorAll('input:not([disabled])').length;$('tr-sum').textContent=n?`مرصود ${n} من ${all} طالب · متوسط الصف ${Math.round(t/n/mx*100)}%`:''}
+ function save(){const g=$('tr-g').value,p=$('tr-p').value,sub=$('tr-s').value,mx=+$('tr-m').value,s=tSess();
+  if(!teacherSubjects().includes(sub)){alert('لا يمكنك رصد هذه المادة.');return}
+  const ins=[...$('tr-list').querySelectorAll('input:not([disabled])')].filter(i=>i.value!=='');
+  if(!ins.length){alert('اكتب درجة طالب واحد على الأقل.');return}
+  if(ins.some(i=>+i.value<0||+i.value>mx)){alert('توجد درجات خارج النطاق (من 0 إلى '+mx+').');return}
+  const a=readStore(KEY),roster=readStore(RK);let n=0;
+  ins.forEach(i=>{const x=roster.find(r=>normId(r.id)===normId(i.dataset.id));if(!x)return;let r=a.find(y=>normId(y.identifier)===normId(x.id)&&y.period===p&&y.status!=='rejected');
+   if(r&&r.status==='approved')return;
+   if(!r){r={branch:x.branch,name:x.name,identifier:x.id,stage:x.stage||stageKeyFromGrade(g),grade:g,parentPhone:x.phone,period:p,max:mx,marks:[],status:'pending',submittedBy:s.contact,submittedAt:new Date().toISOString(),teachers:[]};a.push(r)}
+   r.marks=(r.marks||[]).filter(m=>m.subject!==sub);r.marks.push({subject:sub,mark:+i.value,by:s.name});r.marks.sort((m1,m2)=>gradeSubjects(g).indexOf(m1.subject)-gradeSubjects(g).indexOf(m2.subject));
+   r.teachers=[...new Set([...(r.teachers||[]),s.contact])];r.result=summarize(r);r.updatedAt=new Date().toISOString();n++});
+  writeStore(KEY,a);try{renderResultApprovals()}catch(e){}list();alert(`تم حفظ درجات ${sub} (${nStudents(n)}) وإرسالها للاعتماد.`)}
+ /* بطاقة النتيجة: إظهار المواد غير المرصودة */
+ const _rc=window.resultCard;window.resultCard=function(x,o={}){let h=_rc(x,o);if(o.status&&x.grade&&x.marks){const miss=gradeSubjects(x.grade).filter(s=>!x.marks.some(m=>m.subject===s));if(miss.length)h=h.replace(/<\/div>$/,`<div class="rs-missing">لم تُرصد بعد: ${miss.map(esc).join('، ')}</div></div>`)}return h};
+ /* المعلم يرى النتائج التي شارك فيها */
+ const _rr=window.renderResultsPage;window.renderResultsPage=function(){if(currentRole()!=='teacher')return _rr();const box=$('published-results');if(!box)return;const s=tSess(),subs=teacherSubjects();
+  const mine=readStore(KEY).filter(x=>(x.teachers||[]).includes(s.contact)||x.submittedBy===s.contact);
+  box.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px"><h3 style="margin:0;color:#5A1C5E">نتائج رصدتها في ${esc(subs.join('، ')||'مادتي')} (${mine.length})</h3><button class="action-btn" type="button" onclick="rhGo('panel:sup-results')">＋ رصد نتائج</button></div>`+(mine.length?mine.map(x=>resultCard(x,{status:true})).join(''):'<p class="muted-note">لم ترصد أي نتائج بعد.</p>')};
+ /* الإدارة: تنبيه عند اعتماد نتيجة غير مكتملة */
+ const _ap=window.approveStudentResult;window.approveStudentResult=function(i,ok){const x=readStore(KEY)[i];if(ok&&x&&x.marks){const miss=gradeSubjects(x.grade).filter(s=>!x.marks.some(m=>m.subject===s));if(miss.length&&!confirm(`نتيجة ${x.name} ينقصها: ${miss.join('، ')}. هل تريد اعتمادها الآن؟`))return}_ap(i,ok)};
+ /* رصد الدرجات: المادة من مواد المعلم فقط */
+ function lockGradingSubject(){const inp=$('gr-subject');if(!inp||currentRole()!=='teacher')return;const subs=teacherSubjects();if(!subs.length)return;let sel=$('gr-subject-sel');
+  if(inp.tagName==='INPUT'){inp.type='hidden';if(!sel){sel=document.createElement('select');sel.id='gr-subject-sel';inp.after(sel);sel.onchange=()=>{inp.value=sel.value;inp.dispatchEvent(new Event('change'));inp.dispatchEvent(new Event('input'))}}}
+  sel.innerHTML=subs.map(s=>`<option>${esc(s)}</option>`).join('');if(!subs.includes(inp.value))inp.value=subs[0];sel.value=inp.value;
+  const gg=$('gr-grade');if(gg&&teacherGrades().length){[...gg.options].forEach(o=>{o.hidden=o.value&&!teacherGrades().includes(o.value)});if(!teacherGrades().includes(gg.value)){gg.value=teacherGrades()[0];gg.dispatchEvent(new Event('change'))}}}
+ const _p=window.paintPage;window.paintPage=function(id){_p(id);if(id==='support')setTimeout(build,0);if(id==='grading')setTimeout(lockGradingSubject,0)};
+ const _sp=window.showSupportPanel;if(_sp)window.showSupportPanel=function(id,b){_sp(id,b);if(id==='sup-results')setTimeout(build,0)};
+})();
+</script>
+<style id="subj-chips-styles">
+.subj-chips{grid-column:1/-1;border:1.5px solid #E3CFE6;border-radius:16px;padding:10px 12px;background:#fff;display:grid;gap:8px}
+.sc-lbl{font-weight:800;font-size:13px;color:#5A1C5E}
+.sc-list{display:flex;flex-wrap:wrap;gap:6px}.sc-list:empty::before{content:'لم تُضف أي مادة بعد';color:#8a7f95;font-size:13px;font-weight:600}
+.sc-chip{display:inline-flex;align-items:center;gap:6px;background:#F5EAF6;color:#5A1C5E;border-radius:30px;padding:6px 8px 6px 12px;font-weight:800;font-size:13.5px}
+.sc-chip button{border:0;background:#84298A;color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:14px;line-height:1;padding:0}
+.sc-add{display:flex;gap:8px}.sc-add input{flex:1;min-width:0}.sc-add button{border:0;background:#84298A;color:#fff;border-radius:12px;padding:0 16px;font-weight:800;cursor:pointer;white-space:nowrap}
+</style>
+<script id="subj-chips-script">
+(function(){
+ const $=id=>document.getElementById(id);
+ const SUBJ=['الرياضيات','اللغة العربية','العلوم','التربية الإسلامية','اللغة الإنجليزية','الاجتماعيات','القرآن الكريم','الحاسوب','الفيزياء','الكيمياء','الأحياء','التربية الفنية','التربية البدنية'];
+ const split=v=>String(v||'').split(/[,،\n]/).map(x=>x.trim()).filter(Boolean);
+ let last=null;
+ function paint(){const h=$('m-subject');if(!h)return;const l=split(h.value);last=h.value;$('m-subj-list').innerHTML=l.map((x,i)=>`<span class="sc-chip">${esc(x)}<button type="button" data-scdel="${i}" aria-label="حذف ${esc(x)}">×</button></span>`).join('');
+  const known=[...new Set([...SUBJ,...readStore('wataniya_schedule').map(x=>x.subject)])].filter(x=>x&&!l.includes(x));$('m-subj-dl').innerHTML=known.map(x=>`<option value="${esc(x)}">`).join('')}
+ function set(l){$('m-subject').value=l.join('، ');paint()}
+ function add(){const i=$('m-subj-input'),v=i.value.trim();if(!v){i.focus();return}const l=split($('m-subject').value);if(l.includes(v)){i.value='';return}set([...l,v]);i.value='';i.focus()}
+ document.addEventListener('click',e=>{if(e.target.id==='m-subj-btn')add();const d=e.target.closest('[data-scdel]');if(d){const l=split($('m-subject').value);l.splice(+d.dataset.scdel,1);set(l)}});
+ document.addEventListener('keydown',e=>{if(e.target.id==='m-subj-input'&&e.key==='Enter'){e.preventDefault();add()}});
+ // مزامنة عند فتح النموذج أو تعديل معلم
+ setInterval(()=>{const h=$('m-subject');if(h&&h.value!==last)paint()},300);
+ // إضافة ما كتبه المعلم في الخانة إن نسي الضغط على إضافة
+ document.addEventListener('mousedown',e=>{const b=e.target.closest('#teacher-editor button');if(b&&b.id!=='m-subj-btn'&&!b.closest('.sc-chip')&&$('m-subj-input')&&$('m-subj-input').value.trim())add()},true);
+})();
+</script>
+<style id="stg-styles">
+.stg{margin-top:14px}.stg h4{margin:0 0 10px;color:#5A1C5E;font-size:16px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.stg h4 span{font-size:12.5px;color:#6b5f78;font-weight:700}
+.stg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.stg-grid .stg-card{border:1.5px solid #EFE6F2!important;background:#fff!important;color:#2A2233!important;box-shadow:none!important;min-height:0!important;justify-content:stretch!important;align-items:start!important;width:auto!important;border-radius:16px;padding:12px 14px;text-align:right;cursor:pointer;font:inherit;display:grid;gap:4px;transition:.15s}
+.stg-grid .stg-card:hover{border-color:#84298A!important;transform:translateY(-2px)}
+.stg-card b{font-size:16px;color:#2A2233}.stg-card small{color:#6b5f78;font-weight:700;font-size:12.5px}.stg-card.empty b{color:#8a7f95}
+.stg-card .n{color:#84298A;font-weight:800;font-size:13px}
+</style>
+<script id="stg-script">
+(function(){
+ const ST=[['المرحلة التمهيدية',g=>/KJ/.test(g)],['المرحلة الأساسية',g=>!/KJ|ثانوي/.test(g)],['المرحلة الثانوية',g=>/ثانوي/.test(g)]];
+ function render(){const box=document.getElementById('stg-overview');if(!box)return;const st=readStore('wataniya_students_v1'),te=readStore('wataniya_teachers_v1');
+  const tcount=g=>te.filter(t=>String(t.grades||'').split(/[,،]/).map(x=>x.trim()).includes(g)).length;
+  box.innerHTML=ST.map(([n,f])=>{const gs=allGrades.filter(f),tot=st.filter(x=>gs.includes(x.grade)).length;return `<div class="stg"><h4>${n}<span>${gs.length===2?'صفان':gs.length+' صفوف'} · ${tot?nStudents(tot):'لا يوجد طلاب'}</span></h4><div class="stg-grid">${gs.map(g=>{const c=st.filter(x=>x.grade===g).length,t=tcount(g);return `<button type="button" class="stg-card ${c?'':'empty'}" data-stg="${esc(g)}"><b>${esc(g)}</b><span class="n">${c?nStudents(c):'لا يوجد طلاب'}</span><small>${t?`${t} ${t>2&&t<11?'معلمين':'معلم'}`:'لم يُسند معلم'}</small></button>`}).join('')}</div></div>`}).join('')}
+ document.addEventListener('click',e=>{const c=e.target.closest('[data-stg]');if(!c)return;show('students-admin');setTimeout(()=>{const f=document.getElementById('sa-filter');if(f){f.value=c.dataset.stg;f.dispatchEvent(new Event('change'))}},50)});
+ const _sp=window.showSupportPanel;if(_sp)window.showSupportPanel=function(id,b){_sp(id,b);if(id==='sup-stages')render()};
+ const _p=window.paintPage;window.paintPage=function(id){_p(id);if(id==='support')render()};
+})();
+</script>
+<style id="school-name-font">
+.ld-brand b,.ld-foot-brand b,.topbar .brand>div:not(.logo),.print-school-head h2,.lg-brand b,.lg-head b{font-family:'Almarai','Tajawal',Tahoma,sans-serif!important;font-weight:800!important;letter-spacing:0}
+.topbar .brand>div:not(.logo) small{font-family:'Tajawal',Tahoma,sans-serif!important;font-weight:600!important}
+</style>
+<style id="promo-styles">
+.rs-outcome{padding:10px 14px;font-weight:800;font-size:13.5px;border-top:1px solid #EFE6F2}
+.rs-outcome.pass{background:#F5EAF6;color:#5A1C5E}.rs-outcome.fail{background:#fdeaea;color:#B3141C}.rs-outcome.grad{background:linear-gradient(135deg,#84298A,#E58A23);color:#fff}
+</style>
+<script id="promo-script">
+(function(){
+ const KEY='wataniya_published_results',RK='wataniya_students_v1',PASS=0.5;
+ const gradeSubjects=g=>{const s=[...new Set(readStore('wataniya_schedule').filter(x=>x.grade===g).map(x=>x.subject))];return s.length?s:['الرياضيات','اللغة العربية','العلوم','التربية الإسلامية','اللغة الإنجليزية','الاجتماعيات']};
+ const nextGrade=g=>{const i=allGrades.indexOf(g);return i<0?null:(i===allGrades.length-1?'خريج':allGrades[i+1])};
+ function evaluate(x){const need=gradeSubjects(x.grade),mx=x.max||100,marks=x.marks||[];const miss=need.filter(s=>!marks.some(m=>m.subject===s));if(miss.length)return {state:'incomplete',miss};
+  const failed=marks.filter(m=>(+m.mark)<mx*PASS).map(m=>m.subject);return failed.length?{state:'fail',failed}:{state:'pass'}}
+ window.finalOutcome=evaluate;
+ function promote(i){const a=readStore(KEY),x=a[i];if(!x||x.period!=='آخر العام'||x.status!=='approved'||x.outcome)return null;const ev=evaluate(x);if(ev.state==='incomplete')return ev;
+  const r=readStore(RK),k=r.findIndex(s=>normId(s.id)===normId(x.identifier));
+  if(ev.state==='pass'){const ng=nextGrade(x.grade);x.outcome={state:ng==='خريج'?'grad':'pass',from:x.grade,to:ng,at:new Date().toISOString()};if(k>=0&&r[k].grade===x.grade){r[k].prevGrade=x.grade;r[k].grade=ng;r[k].stage=ng==='خريج'?'graduated':stageKeyFromGrade(ng);r[k].promotedAt=x.outcome.at;writeStore(RK,r)}
+   try{pushNotification('results',ng==='خريج'?'تهانينا بالتخرج':'تهانينا بالنجاح',`${x.name} — ${ng==='خريج'?'أتم المرحلة الثانوية':'منقول إلى الصف '+ng}`)}catch(e){}}
+  else x.outcome={state:'fail',from:x.grade,failed:ev.failed,at:new Date().toISOString()};
+  writeStore(KEY,a);return ev}
+ const _ap=window.approveStudentResult;window.approveStudentResult=function(i,ok){const before=readStore(KEY)[i];
+  if(ok&&before&&before.period==='آخر العام'){const ev=evaluate(before);if(ev.state==='incomplete'){alert(`لا يمكن اعتماد نتيجة آخر العام قبل رصد جميع المواد. ينقصها: ${ev.miss.join('، ')}.`);return}}
+  _ap(i,ok);const ev=promote(i);if(ev){const x=readStore(KEY)[i];setTimeout(()=>alert(x.outcome.state==='fail'?`${x.name}: راسب في ${x.outcome.failed.join('، ')} — يبقى في الصف ${x.grade}.`:x.outcome.state==='grad'?`${x.name}: ناجح — تم تسجيله خريجاً.`:`${x.name}: ناجح — تم نقله تلقائياً إلى الصف ${x.outcome.to}.`),300)}};
+ const _rc=window.resultCard;window.resultCard=function(x,o={}){let h=_rc(x,o);if(x.period==='آخر العام'){const oc=x.outcome;let t='';
+  if(oc)t=oc.state==='pass'?`<div class="rs-outcome pass">✓ ناجح ومنقول إلى الصف ${esc(oc.to)}</div>`:oc.state==='grad'?`<div class="rs-outcome grad">🎓 ناجح — أتمّ المرحلة الثانوية</div>`:`<div class="rs-outcome fail">راسب في: ${oc.failed.map(esc).join('، ')} — يعيد الصف ${esc(oc.from)}</div>`;
+  else if(o.status&&x.marks){const ev=evaluate(x);if(ev.state!=='incomplete')t=ev.state==='pass'?`<div class="rs-outcome pass">عند الاعتماد: ينتقل تلقائياً إلى الصف ${esc(nextGrade(x.grade)||'')}</div>`:`<div class="rs-outcome fail">عند الاعتماد: راسب في ${ev.failed.map(esc).join('، ')}</div>`}
+  if(t)h=h.replace(/<\/div>$/,t+'</div>')}return h};
 })();
 </script>
