@@ -410,6 +410,7 @@ th{background:#FAF2FA;color:var(--purple-dark)}.empty-row{text-align:center;colo
 @media(max-width:700px){.brand-tagline{font-size:9px!important}.notifications-hero{padding:20px}.notifications-hero h2{font-size:19px}.notification-toolbar{align-items:stretch}.notification-tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:5px}.notification-tabs button{flex:0 0 auto}.notification-toolbar>.action-btn{align-self:flex-start}.notification-item{padding:12px}.notification-actions{flex-direction:column}.notification-actions button{font-size:10px}}
 </style>
 
+<script>window.resultSubjects=function(g){try{const o=JSON.parse(localStorage.getItem('wataniya_result_subjects_v1')||'{}');if(o[g]&&o[g].length)return o[g]}catch(e){}g=String(g||'');if(/KJ/.test(g))return ['القرآن الكريم','التربية الإسلامية','اللغة العربية','اللغة الإنجليزية','الرياضيات','التربية الفنية'];if(/ثانوي/.test(g))return ['القرآن الكريم','التربية الإسلامية','اللغة العربية','اللغة الإنجليزية','الرياضيات','الفيزياء','الكيمياء','الأحياء','التاريخ','الجغرافيا'];return ['القرآن الكريم','التربية الإسلامية','اللغة العربية','اللغة الإنجليزية','الرياضيات','التربية الوطنية','العلوم والصحة','التربية الفنية','التربية البدنية']};</script>
 </head>
 <body>
 <div id="landing" aria-label="الصفحة التعريفية للمدرسة">
@@ -937,7 +938,8 @@ const examPinKey='wataniya_exam_pin_hashes_v1', examArchiveKey='wataniya_exam_ar
 function readJsonLocal(k,def){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(def))}catch(e){return def}}
 function normalizeContact(s){return String(s||'').trim().toLowerCase()}
 function examContactTeacher(contact){return teacherRows().find(t=>normalizeContact(t.phone)===normalizeContact(contact)||normalizeContact(t.email)===normalizeContact(contact))}
-async function sha256(text){if(!window.crypto||!crypto.subtle)throw new Error('المتصفح لا يدعم التحقق المشفر في هذا السياق. افتحي المنصة عبر استضافة آمنة HTTPS.');const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function sha256js(str){const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];const b=new TextEncoder().encode(str),l=b.length,n=((l+9+63)>>6)<<6,m=new Uint8Array(n);m.set(b);m[l]=0x80;const bits=l*8;const dv=new DataView(m.buffer);dv.setUint32(n-4,bits>>>0);dv.setUint32(n-8,Math.floor(bits/4294967296));let H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];const w=new Uint32Array(64),r=(x,k)=>(x>>>k)|(x<<(32-k));for(let o=0;o<n;o+=64){for(let i=0;i<16;i++)w[i]=dv.getUint32(o+i*4);for(let i=16;i<64;i++){const s0=r(w[i-15],7)^r(w[i-15],18)^(w[i-15]>>>3),s1=r(w[i-2],17)^r(w[i-2],19)^(w[i-2]>>>10);w[i]=(w[i-16]+s0+w[i-7]+s1)>>>0}let [a,b2,c,d,e,f,g,h]=H;for(let i=0;i<64;i++){const S1=r(e,6)^r(e,11)^r(e,25),ch=(e&f)^(~e&g),t1=(h+S1+ch+K[i]+w[i])>>>0,S0=r(a,2)^r(a,13)^r(a,22),mj=(a&b2)^(a&c)^(b2&c),t2=(S0+mj)>>>0;h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b2;b2=a;a=(t1+t2)>>>0}H=[H[0]+a,H[1]+b2,H[2]+c,H[3]+d,H[4]+e,H[5]+f,H[6]+g,H[7]+h].map(x=>x>>>0)}return H.map(x=>x.toString(16).padStart(8,'0')).join('')}
+async function sha256(text){if(!window.crypto||!crypto.subtle)return sha256js(text);try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){return sha256js(text)}}
 function examMessage(s){document.getElementById('exam-login-message').textContent=s}
 async function setupTeacherPin(){try{const contact=document.getElementById('exam-contact').value.trim(),pin=document.getElementById('exam-pin').value;if(!contact||!pin){examMessage('أدخل رقم الهاتف أو البريد والرقم السري الذي تريد تعيينه.');return}if(pin.length<6){examMessage('يجب ألا يقل الرقم السري عن 6 خانات.');return}const t=examContactTeacher(contact);if(!t){examMessage('لم يتم العثور على هذا الرقم أو البريد في سجل المعلمين.');return}const pins=readJsonLocal(examPinKey,{});pins[normalizeContact(t.phone||t.email)]=await sha256(pin+'|'+normalizeContact(t.phone||t.email));localStorage.setItem(examPinKey,JSON.stringify(pins));document.getElementById('exam-pin').value='';examMessage('تم تعيين الرقم السري بنجاح. يمكنك الآن تسجيل الدخول.')}catch(e){examMessage(e.message)}}
 async function teacherExamLogin(){try{const contact=document.getElementById('exam-contact').value.trim(),pin=document.getElementById('exam-pin').value,t=examContactTeacher(contact);if(!t){examMessage('بيانات الدخول غير مطابقة لسجل المعلمين.');return}if((t.status||'نشط')!=='نشط'){examMessage('الحساب غير نشط. يرجى مراجعة الإدارة.');return}const key=normalizeContact(t.phone||t.email),pins=readJsonLocal(examPinKey,{});if(!pins[key]){examMessage('لم يتم تعيين رقم سري لهذا الحساب بعد. استخدمي خيار إنشاء الرقم السري.');return}if(await sha256(pin+'|'+key)!==pins[key]){examMessage('الرقم السري غير صحيح.');return}const session={role:'teacher',contact:key,name:t.name,phone:t.phone,email:t.email,subject:t.subject,grades:t.grades};localStorage.setItem(examSessionKey,JSON.stringify(session));showExamArea('teacher',session)}catch(e){examMessage(e.message)}}
@@ -2607,7 +2609,7 @@ window.publicResultLookup=function(){const id=document.getElementById('ld-res-id
 <script id="results-v2-script">
 (function(){
  const PERIODS=['الشهر الأول','الشهر الثاني','الشهر الثالث','نصف العام','الشهر الرابع','الشهر الخامس','آخر العام'];
- const MAXDEF={'نصف العام':100,'آخر العام':100};
+ const MAXDEF={'نصف العام':50,'آخر العام':100};
  const SUBJ=['الرياضيات','اللغة العربية','العلوم','التربية الإسلامية','اللغة الإنجليزية','الاجتماعيات'];
  const grade=p=>p>=90?'ممتاز':p>=80?'جيد جداً':p>=65?'جيد':p>=50?'مقبول':'ضعيف';
  const pcls=p=>p==='نصف العام'?'mid':p==='آخر العام'?'final':'';
@@ -2647,11 +2649,11 @@ window.publicResultLookup=function(){const id=document.getElementById('ld-res-id
   else if(r==='parent'){const s=readJsonLocal('wataniya_parent_session_v1',{});const rows=approved().filter(x=>normId(x.identifier)===normId(s.id)&&x.parentPhone&&normPhone(x.parentPhone)===normPhone(s.phone));h='<h3 style="margin:0 0 10px;color:#5A1C5E">نتائج ابني'+(rows[0]?' — '+esc(rows[0].name):'')+'</h3>'+(rows.length?grouped(rows,{noName:true}):'<p class="muted-note">لا توجد نتائج معتمدة حتى الآن.</p>')}
   box.innerHTML=h};
  /* نموذج رفع النتيجة: نوع النتيجة + درجات المواد */
- function subjectsFor(g){const s=[...new Set(readStore('wataniya_schedule').filter(x=>x.grade===g).map(x=>x.subject))];return s.length?s:SUBJ}
+ function subjectsFor(g){return window.resultSubjects(g)}
  function setupForm(){const panel=$('sup-results');if(!panel||$('res-period'))return;const data=$('sup-res-data');if(!data)return;data.type='hidden';
   const per=document.createElement('select');per.id='res-period';per.innerHTML=PERIODS.map(p=>`<option>${p}</option>`).join('');data.before(per);
   const box=document.createElement('div');box.className='res-marks';box.id='res-marks';data.after(box);
-  const build=()=>{const g=$('sup-res-grade').value,mx=MAXDEF[per.value]||20;box.innerHTML=`<h4><span>درجات المواد — ${esc(per.value)}</span><span>الدرجة العظمى لكل مادة: <select id="res-max">${[10,20,30,40,50,100].map(v=>`<option ${v===mx?'selected':''}>${v}</option>`).join('')}</select></span></h4><div class="res-marks-grid">${subjectsFor(g).map(s=>`<label class="res-mark"><span>${esc(s)}</span><input type="number" inputmode="decimal" min="0" step="0.5" data-s="${esc(s)}"></label>`).join('')}</div><div class="res-sum" id="res-sum"></div>`;
+  const build=()=>{const g=$('sup-res-grade').value,mx=MAXDEF[per.value]||100;box.innerHTML=`<h4><span>درجات المواد — ${esc(per.value)}</span><span>الدرجة العظمى لكل مادة: <select id="res-max">${[10,20,30,40,50,100].map(v=>`<option ${v===mx?'selected':''}>${v}</option>`).join('')}</select></span></h4><div class="res-marks-grid">${subjectsFor(g).map(s=>`<label class="res-mark"><span>${esc(s)}</span><input type="number" inputmode="decimal" min="0" step="0.5" data-s="${esc(s)}"></label>`).join('')}</div><div class="res-sum" id="res-sum"></div>`;
    box.querySelectorAll('input').forEach(i=>i.addEventListener('input',sum));$('res-max').onchange=sum;sum()};
   const sum=()=>{const mx=+$('res-max').value,ins=[...box.querySelectorAll('input')];const vals=ins.map(i=>i.value===''?null:+i.value);ins.forEach((i,k)=>i.parentElement.classList.toggle('bad',vals[k]!=null&&(vals[k]<0||vals[k]>mx)));const f=vals.filter(v=>v!=null);if(!f.length){$('res-sum').textContent='';return}const tot=f.reduce((a,b)=>a+b,0),pct=Math.round(tot/(mx*f.length)*100);$('res-sum').textContent=`المجموع ${tot} من ${mx*f.length} · النسبة ${pct}% · التقدير ${grade(pct)}${f.length<ins.length?' (لم تكتمل كل المواد)':''}`};
   per.onchange=build;$('sup-res-grade').addEventListener('change',build);$('sup-res-stage').addEventListener('change',()=>setTimeout(build,0));build();
@@ -2880,7 +2882,7 @@ body.role-teacher #sup-results>.form-grid,body.role-teacher #sup-results>.action
  const SUBJ=['الرياضيات','اللغة العربية','العلوم','التربية الإسلامية','اللغة الإنجليزية','الاجتماعيات'];
  const KEY='wataniya_published_results',RK='wataniya_students_v1';
  const split=v=>String(v||'').split(/[,،\n]/).map(x=>x.trim()).filter(Boolean);
- const gradeSubjects=g=>{const s=[...new Set(readStore('wataniya_schedule').filter(x=>x.grade===g).map(x=>x.subject))];return s.length?s:SUBJ};
+ const gradeSubjects=g=>window.resultSubjects(g);
  const grade=p=>p>=90?'ممتاز':p>=80?'جيد جداً':p>=65?'جيد':p>=50?'مقبول':'ضعيف';
  const tSess=()=>readJsonLocal(examSessionKey,{})||{};
  window.teacherSubjects=()=>split(tSess().subject);
@@ -2890,34 +2892,44 @@ body.role-teacher #sup-results>.form-grid,body.role-teacher #sup-results>.action
   const missing=need.filter(s=>!have.some(m=>m.subject===s));return missing.length?`${x.period}: رُصدت ${have.length} من ${need.length} مواد`:`${x.period}: ${pct}% — ${grade(pct)}`}
  window.resultSummary=summarize;
  /* لوحة المعلم: رصد مادته لطلاب الصف */
+ const MONTHS={'الشهر الأول':'سبتمبر','الشهر الثاني':'أكتوبر','الشهر الثالث':'نوفمبر','الشهر الرابع':'فبراير','الشهر الخامس':'مارس'};
+ window.PERIOD_MONTH=MONTHS;
+ const ptype=p=>p==='نصف العام'?'mid':p==='آخر العام'?'final':'month';
+ const PMAX={month:100,mid:50,final:100};
+ const FIELDS={month:[['att','مواظبة',20],['hw','واجبات',20],['oral','شفوي',20],['written','تحريري',40]],mid:[['coll','محصلة الفصل',20],['fin','نهاية الفصل',30]],final:[['s1c','محصلة ف1',20],['s1f','نهاية ف1',30],['s2c','محصلة ف2',20],['s2f','نهاية ف2',30]]};
+ window.RESULT_FIELDS=FIELDS;
+ const plabel=p=>MONTHS[p]?`${p} (${MONTHS[p]})`:p;
  function build(){const panel=$('sup-results');if(!panel||currentRole()!=='teacher')return;let box=$('tres');
-  if(!box){box=document.createElement('div');box.id='tres';box.className='tres';panel.querySelector('p').after(box);panel.querySelector('h3').textContent='رصد نتائج مادتي';panel.querySelector('p').textContent='اختر الصف والفترة، ثم اكتب درجة مادتك لكل طالب. تُجمع درجات جميع المواد في نتيجة واحدة للطالب، ولا تظهر إلا بعد اعتماد الإدارة.'}
+  if(!box){box=document.createElement('div');box.id='tres';box.className='tres';panel.querySelector('p').after(box);panel.querySelector('h3').textContent='رصد نتائج مادتي';panel.querySelector('p').textContent='اختر الصف والفترة والمادة، ثم اكتب درجات كل طالب حسب نموذج نتائج المدرسة. يُحسب المجموع تلقائياً، ولا تظهر النتيجة إلا بعد اعتماد الإدارة.'}
   const subs=teacherSubjects(),grs=teacherGrades();
   if(!subs.length){box.innerHTML='<div class="tres-note">لم تُحدَّد لك مادة بعد. يرجى مراجعة الإدارة لإضافة موادك وصفوفك في دليل المعلمين.</div>';return}
-  const cur={g:$('tr-g')?.value,p:$('tr-p')?.value,s:$('tr-s')?.value,m:$('tr-m')?.value};
-  const gl=grs.length?grs:allGrades;
-  box.innerHTML=`<div class="tres-meta"><label>الصف<select id="tr-g">${gl.map(g=>`<option ${g===cur.g?'selected':''}>${esc(g)}</option>`).join('')}</select></label><label>الفترة<select id="tr-p">${PERIODS.map(p=>`<option ${p===cur.p?'selected':''}>${p}</option>`).join('')}</select></label><label>المادة<select id="tr-s">${subs.map(s=>`<option ${s===cur.s?'selected':''}>${esc(s)}</option>`).join('')}</select></label><label>الدرجة العظمى<select id="tr-m"></select></label></div><div class="tres-list" id="tr-list"></div><div class="tres-sum" id="tr-sum"></div><button type="button" class="action-btn" id="tr-save">حفظ الدرجات وإرسالها للاعتماد</button>`;
-  const defMax=p=>/العام/.test(p)?100:20;
-  const fillMax=()=>{const p=$('tr-p').value,ex=readStore(KEY).find(x=>x.grade===$('tr-g').value&&x.period===p&&x.max);const m=ex?ex.max:defMax(p);$('tr-m').innerHTML=[10,20,30,40,50,100].map(v=>`<option ${v===m?'selected':''}>${v}</option>`).join('');$('tr-m').disabled=!!ex};
-  fillMax();if(cur.m&&!$('tr-m').disabled)$('tr-m').value=cur.m;list();
-  ['tr-g','tr-p','tr-s'].forEach(i=>$(i).onchange=()=>{if(i!=='tr-s')fillMax();list()});$('tr-m').onchange=list;$('tr-save').onclick=save}
- function list(){const g=$('tr-g').value,p=$('tr-p').value,sub=$('tr-s').value,mx=+$('tr-m').value,all=readStore(KEY);
+  const cur={g:$('tr-g')?.value,p:$('tr-p')?.value,s:$('tr-s')?.value};const gl=grs.length?grs:allGrades;
+  box.innerHTML=`<div class="tres-meta"><label>الصف<select id="tr-g">${gl.map(g=>`<option ${g===cur.g?'selected':''}>${esc(g)}</option>`).join('')}</select></label><label>الفترة<select id="tr-p">${PERIODS.map(p=>`<option value="${p}" ${p===cur.p?'selected':''}>${plabel(p)}</option>`).join('')}</select></label><label>المادة<select id="tr-s">${subs.map(s=>`<option ${s===cur.s?'selected':''}>${esc(s)}</option>`).join('')}</select></label></div><div class="tres-note" id="tr-hint"></div><div class="tres-list" id="tr-list"></div><div class="tres-sum" id="tr-sum"></div><button type="button" class="action-btn" id="tr-save">حفظ الدرجات وإرسالها للاعتماد</button>`;
+  ['tr-g','tr-p','tr-s'].forEach(i=>$(i).onchange=list);$('tr-save').onclick=save;list()}
+ function monthAvg(sid,sub,ps){const a=readStore(KEY).filter(x=>normId(x.identifier)===normId(sid)&&ps.includes(x.period)&&x.status!=='rejected');const v=a.map(x=>(x.marks||[]).find(m=>m.subject===sub)).filter(Boolean).map(m=>(+m.mark)/5);return v.length?Math.round(v.reduce((s,x)=>s+x,0)/v.length*2)/2:null}
+ function list(){const g=$('tr-g').value,p=$('tr-p').value,sub=$('tr-s').value,t=ptype(p),F=FIELDS[t],all=readStore(KEY);
+  $('tr-hint').textContent=t==='month'?`نموذج النتيجة الشهرية: مواظبة 20 + واجبات 20 + شفوي 20 + تحريري 40 = 100، والمتوسط من 20.`:t==='mid'?'نموذج نصف العام: محصلة الفصل 20 (تُحسب من متوسط الشهور ويمكن تعديلها) + نهاية الفصل 30 = 50.':'نموذج آخر العام: الفصل الأول (20 + 30) يُنقل من نتيجة نصف العام، والفصل الثاني (20 + 30)، والمجموع من 100.';
   const st=readStore(RK).filter(x=>x.grade===g);
-  $('tr-list').innerHTML=st.length?st.map(x=>{const r=all.find(y=>normId(y.identifier)===normId(x.id)&&y.period===p&&y.status!=='rejected');const m=r&&(r.marks||[]).find(m=>m.subject===sub);const lock=r&&r.status==='approved';
-   return `<div class="tres-row ${lock?'lock':''}"><div><b>${esc(x.name)}</b><small>رقم الجلوس ${esc(x.id)}${lock?' · <span class="lk">معتمدة</span>':''}</small></div><input type="number" inputmode="decimal" min="0" max="${mx}" step="0.5" data-id="${esc(x.id)}" value="${m?esc(m.mark):''}" ${lock?'disabled':''} placeholder="من ${mx}"></div>`}).join(''):'<div class="tres-note">لا يوجد طلاب مسجلون في هذا الصف.</div>';
+  $('tr-list').innerHTML=st.length?st.map(x=>{const r=all.find(y=>normId(y.identifier)===normId(x.id)&&y.period===p&&y.status!=='rejected');const m=r&&(r.marks||[]).find(m=>m.subject===sub);const lock=r&&r.status==='approved';const parts=Object.assign({},m&&m.parts);
+   if(!m&&t==='mid'){const a=monthAvg(x.id,sub,['الشهر الأول','الشهر الثاني','الشهر الثالث']);if(a!=null)parts.coll=a}
+   if(!m&&t==='final'){const mid=all.find(y=>normId(y.identifier)===normId(x.id)&&y.period==='نصف العام'&&y.status!=='rejected');const mm=mid&&(mid.marks||[]).find(q=>q.subject===sub);if(mm&&mm.parts){parts.s1c=mm.parts.coll;parts.s1f=mm.parts.fin}const a=monthAvg(x.id,sub,['الشهر الرابع','الشهر الخامس']);if(a!=null)parts.s2c=a}
+   return `<div class="tres-row2 ${lock?'lock':''}" data-id="${esc(x.id)}"><div class="tr-who"><b>${esc(x.name)}</b><small>رقم الجلوس ${esc(x.id)}${lock?' · <span class="lk">معتمدة</span>':''}</small></div><div class="tr-ins">${F.map(([k,n,mx])=>`<label><span>${n}<em>/${mx}</em></span><input type="number" inputmode="decimal" min="0" max="${mx}" step="0.5" data-k="${k}" data-mx="${mx}" value="${parts[k]!=null?esc(parts[k]):''}" ${lock?'disabled':''}></label>`).join('')}<div class="tr-tot"><span>المجموع</span><b>—</b></div></div></div>`}).join(''):'<div class="tres-note">لا يوجد طلاب مسجلون في هذا الصف.</div>';
   $('tr-list').querySelectorAll('input').forEach(i=>i.oninput=chk);chk()}
- function chk(){const mx=+$('tr-m').value;let n=0,t=0;$('tr-list').querySelectorAll('input').forEach(i=>{const v=i.value===''?null:+i.value;i.parentElement.classList.toggle('bad',v!=null&&(v<0||v>mx));if(v!=null){n++;t+=v}});const all=$('tr-list').querySelectorAll('input:not([disabled])').length;$('tr-sum').textContent=n?`مرصود ${n} من ${all} طالب · متوسط الصف ${Math.round(t/n/mx*100)}%`:''}
- function save(){const g=$('tr-g').value,p=$('tr-p').value,sub=$('tr-s').value,mx=+$('tr-m').value,s=tSess();
+ function rowVals(row){const v={};let ok=true,any=false,full=true;row.querySelectorAll('input').forEach(i=>{if(i.value===''){full=false;return}any=true;const n=+i.value;if(isNaN(n)||n<0||n>+i.dataset.mx)ok=false;v[i.dataset.k]=n});return {v,ok,any,full}}
+ function chk(){let n=0,bad=0;$('tr-list').querySelectorAll('.tres-row2').forEach(r=>{const {v,ok,any,full}=rowVals(r);r.classList.toggle('bad',!ok);const tot=Object.values(v).reduce((a,b)=>a+b,0);r.querySelector('.tr-tot b').textContent=any?tot+(ptype($('tr-p').value)==='month'?` · متوسط ${Math.round(tot/5*100)/100}`:''):'—';if(full&&ok)n++;if(!ok)bad++});const all=$('tr-list').querySelectorAll('.tres-row2:not(.lock)').length;$('tr-sum').textContent=`مكتمل ${n} من ${all} طالب${bad?` · ${bad} فيها درجة خارج النطاق`:''}`}
+ function save(){const g=$('tr-g').value,p=$('tr-p').value,sub=$('tr-s').value,t=ptype(p),s=tSess();
   if(!teacherSubjects().includes(sub)){alert('لا يمكنك رصد هذه المادة.');return}
-  const ins=[...$('tr-list').querySelectorAll('input:not([disabled])')].filter(i=>i.value!=='');
-  if(!ins.length){alert('اكتب درجة طالب واحد على الأقل.');return}
-  if(ins.some(i=>+i.value<0||+i.value>mx)){alert('توجد درجات خارج النطاق (من 0 إلى '+mx+').');return}
+  const rows=[...$('tr-list').querySelectorAll('.tres-row2:not(.lock)')].map(r=>({r,...rowVals(r)})).filter(x=>x.any);
+  if(!rows.length){alert('اكتب درجات طالب واحد على الأقل.');return}
+  if(rows.some(x=>!x.ok)){alert('توجد درجات خارج النطاق المسموح.');return}
+  if(rows.some(x=>!x.full)){alert('أكمل جميع خانات الطالب قبل الحفظ (أو اترك خانات الطالب فارغة بالكامل).');return}
   const a=readStore(KEY),roster=readStore(RK);let n=0;
-  ins.forEach(i=>{const x=roster.find(r=>normId(r.id)===normId(i.dataset.id));if(!x)return;let r=a.find(y=>normId(y.identifier)===normId(x.id)&&y.period===p&&y.status!=='rejected');
-   if(r&&r.status==='approved')return;
-   if(!r){r={branch:x.branch,name:x.name,identifier:x.id,stage:x.stage||stageKeyFromGrade(g),grade:g,parentPhone:x.phone,period:p,max:mx,marks:[],status:'pending',submittedBy:s.contact,submittedAt:new Date().toISOString(),teachers:[]};a.push(r)}
-   r.marks=(r.marks||[]).filter(m=>m.subject!==sub);r.marks.push({subject:sub,mark:+i.value,by:s.name});r.marks.sort((m1,m2)=>gradeSubjects(g).indexOf(m1.subject)-gradeSubjects(g).indexOf(m2.subject));
-   r.teachers=[...new Set([...(r.teachers||[]),s.contact])];r.result=summarize(r);r.updatedAt=new Date().toISOString();n++});
+  rows.forEach(({r,v})=>{const x=roster.find(q=>normId(q.id)===normId(r.dataset.id));if(!x)return;let rec=a.find(y=>normId(y.identifier)===normId(x.id)&&y.period===p&&y.status!=='rejected');
+   if(rec&&rec.status==='approved')return;
+   if(!rec){rec={branch:x.branch,name:x.name,identifier:x.id,section:x.section||'1',stage:x.stage||stageKeyFromGrade(g),grade:g,parentPhone:x.phone,period:p,max:PMAX[t],marks:[],status:'pending',submittedBy:s.contact,submittedAt:new Date().toISOString(),teachers:[]};a.push(rec)}
+   rec.max=PMAX[t];const tot=Object.values(v).reduce((q,w)=>q+w,0);
+   rec.marks=(rec.marks||[]).filter(m=>m.subject!==sub);rec.marks.push({subject:sub,mark:tot,parts:v,by:s.name});rec.marks.sort((m1,m2)=>gradeSubjects(g).indexOf(m1.subject)-gradeSubjects(g).indexOf(m2.subject));
+   rec.teachers=[...new Set([...(rec.teachers||[]),s.contact])];rec.result=summarize(rec);rec.updatedAt=new Date().toISOString();n++});
   writeStore(KEY,a);try{renderResultApprovals()}catch(e){}list();alert(`تم حفظ درجات ${sub} (${nStudents(n)}) وإرسالها للاعتماد.`)}
  /* بطاقة النتيجة: إظهار المواد غير المرصودة */
  const _rc=window.resultCard;window.resultCard=function(x,o={}){let h=_rc(x,o);if(o.status&&x.grade&&x.marks){const miss=gradeSubjects(x.grade).filter(s=>!x.marks.some(m=>m.subject===s));if(miss.length)h=h.replace(/<\/div>$/,`<div class="rs-missing">لم تُرصد بعد: ${miss.map(esc).join('، ')}</div></div>`)}return h};
@@ -2992,7 +3004,7 @@ body.role-teacher #sup-results>.form-grid,body.role-teacher #sup-results>.action
 <script id="promo-script">
 (function(){
  const KEY='wataniya_published_results',RK='wataniya_students_v1',PASS=0.5;
- const gradeSubjects=g=>{const s=[...new Set(readStore('wataniya_schedule').filter(x=>x.grade===g).map(x=>x.subject))];return s.length?s:['الرياضيات','اللغة العربية','العلوم','التربية الإسلامية','اللغة الإنجليزية','الاجتماعيات']};
+ const gradeSubjects=g=>window.resultSubjects(g);
  const nextGrade=g=>{const i=allGrades.indexOf(g);return i<0?null:(i===allGrades.length-1?'خريج':allGrades[i+1])};
  function evaluate(x){const need=gradeSubjects(x.grade),mx=x.max||100,marks=x.marks||[];const miss=need.filter(s=>!marks.some(m=>m.subject===s));if(miss.length)return {state:'incomplete',miss};
   const failed=marks.filter(m=>(+m.mark)<mx*PASS).map(m=>m.subject);return failed.length?{state:'fail',failed}:{state:'pass'}}
@@ -3021,9 +3033,11 @@ body.role-teacher #sup-results>.form-grid,body.role-teacher #sup-results>.action
 .mx-panel.closed .mxp-body{display:none}
 .mxp-grp{background:#fff;border:1px solid #EFE6F2;border-radius:14px;padding:8px}
 .mxp-grp h5{margin:0 0 6px;font-size:12.5px;color:#5A1C5E;text-align:center;background:#F5EAF6;border-radius:10px;padding:4px}
-.mxp-grp div{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.mxp-grp div{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;direction:ltr}.mxp-grp button{direction:ltr;unicode-bidi:isolate}
 .mxp-grp button{min-width:38px;height:34px;padding:0 6px;border:1px solid #E9DFEE;background:#fff;border-radius:10px;font:700 15px 'Cambria Math','Times New Roman',serif;color:#2A2233;cursor:pointer}
-.mxp-grp button:hover{background:#84298A;color:#fff;border-color:#84298A}
+.mxp-grp button:hover,.mxp-grp button:active{background:#84298A;color:#fff;border-color:#84298A}.mx-panel{touch-action:manipulation}
+.mxp-toast{position:absolute;bottom:8px;left:50%;transform:translateX(-50%) translateY(10px);background:#3A1240;color:#fff;border-radius:12px;padding:7px 14px;font-weight:800;font-size:13px;opacity:0;pointer-events:none;transition:.2s;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis}.mxp-toast.on{opacity:1;transform:translateX(-50%)}.mxp-toast.bad{background:#B3141C}
+#math-bar.mx-panel{position:sticky;max-height:none!important;overflow:hidden!important;display:block!important}.mx-hit{box-shadow:0 0 0 3px #E58A23!important}
 .mxp-grp button.w{font:800 12.5px Tajawal,Tahoma,sans-serif}
 /* وسائط السؤال */
 .q-media-bar{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
@@ -3075,19 +3089,21 @@ body.role-teacher #sup-results>.form-grid,body.role-teacher #sup-results>.action
 .ct-box textarea{width:100%;box-sizing:border-box;border:1.5px solid #E3CFE6;border-radius:12px;padding:8px;font:inherit}
 .ct-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .ct-file{position:relative;display:inline-flex;align-items:center;gap:6px;background:#F5EAF6;color:#84298A;border:1.5px dashed #C9A3CC;border-radius:12px;padding:9px 14px;font-weight:800;cursor:pointer;font-size:13px}.ct-file input{position:absolute;inset:0;opacity:0;cursor:pointer}
-@media(max-width:760px){#math-bar.mx-panel{top:70px}.mx-panel .mxp-body{grid-template-columns:1fr 1fr;max-height:38vh}.mxp-grp button{min-width:32px;height:32px;font-size:14px}}
+@media(max-width:760px){#math-bar.mx-panel{top:108px}.mx-panel .mxp-body{grid-template-columns:1fr 1fr;max-height:28vh}.mxp-grp button{min-width:32px;height:32px;font-size:14px}}
 </style>
 <script id="v69-script">
 (function(){
  const $=id=>document.getElementById(id);
  /* ===== 1) لوحة الرموز الرياضية المصنفة ===== */
  const GROUPS=[['العمليات الحسابية',['+','−','×','÷','=','±','%']],['الكسور',[['a/b','( )/( )'],'½','⅓','¼','¾','⅔']],['الأسس والجذور',[['x²','²'],['x³','³'],['xⁿ','ⁿ'],['√x','√( )'],['∛x','∛( )']]],['الدوال',[['sin','sin( )'],['cos','cos( )'],['tan','tan( )'],['log','log( )'],['ln','ln( )'],['f(x)','f(x)']]],['التفاضل والتكامل',['∫',['∂','∂'],['dx','dx'],['lim','lim'],['d/dx','d/dx'],'∑','∞']],['المقارنة',['<','>','≤','≥','≠','≈','≡']],['المجموعات',['∈','∉','∪','∩','⊂','⊆','∅']],['الرموز اليونانية',['π','α','β','θ','λ','μ','σ','Δ','Ω']],['الهندسة',['△','□','○','∠','°','⊥','∥','≅']],['الأقواس',[['( )','( )'],['[ ]','[ ]'],['{ }','{ }'],['|x|','| |']]]];
- function ins(t){const el=window.lastExamField;if(!el||!document.contains(el)){alert('اضغط أولاً داخل خانة السؤال أو الخيار، ثم اختر الرمز.');return}const ph=t.indexOf('( )')>=0||t.indexOf('[ ]')>=0||t.indexOf('{ }')>=0||t==='| |';let text=t.replace(/\( \)/g,'()').replace('[ ]','[]').replace('{ }','{}').replace('| |','||');const s=el.selectionStart??el.value.length,e=el.selectionEnd??el.value.length;el.value=el.value.slice(0,s)+text+el.value.slice(e);let pos=s+text.length;if(ph){const i=text.search(/\(\)|\[\]|\{\}|\|\|/);if(i>=0)pos=s+i+1}el.focus();try{el.setSelectionRange(pos,pos)}catch(_){}el.dispatchEvent(new Event('input',{bubbles:true}))}
+ function pickField(){let el=window.lastExamField;if(el&&document.contains(el))return el;const qs=document.querySelectorAll('#questions .question .prompt');return qs.length?qs[qs.length-1]:null}
+ function flash(msg,bad){const bar=document.getElementById('math-bar');if(!bar)return;let t=bar.querySelector('.mxp-toast');if(!t){t=document.createElement('div');t.className='mxp-toast';bar.appendChild(t)}t.textContent=msg;t.classList.toggle('bad',!!bad);t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),1600)}
+ function ins(t){const el=pickField();if(!el){flash('أضف سؤالاً أولاً من «أنواع الأسئلة»، ثم اختر الرمز.',true);return}const ph=t.indexOf('( )')>=0||t.indexOf('[ ]')>=0||t.indexOf('{ }')>=0||t==='| |';let text=t.replace(/\( \)/g,'()').replace('[ ]','[]').replace('{ }','{}').replace('| |','||');const s=el.selectionStart??el.value.length,e=el.selectionEnd??el.value.length;el.value=el.value.slice(0,s)+text+el.value.slice(e);let pos=s+text.length;if(ph){const i=text.search(/\(\)|\[\]|\{\}|\|\|/);if(i>=0)pos=s+i+1}window.lastExamField=el;try{el.focus({preventScroll:true})}catch(_){el.focus()}try{el.setSelectionRange(pos,pos)}catch(_){}el.dispatchEvent(new Event('input',{bubbles:true}));el.classList.add('mx-hit');setTimeout(()=>el.classList.remove('mx-hit'),500);flash('تم إدراج '+text.replace(/\(\)|\[\]|\{\}/,'')+' في '+(el.classList.contains('prompt')?'نص السؤال':el.classList.contains('option-value')?'الخيار':'الخانة'))}
  window.buildMathBar=function(){const bar=$('math-bar');if(!bar)return;bar.className='math-bar no-print mx-panel'+(innerWidth<760?' closed':'');
   bar.innerHTML=`<div class="mxp-head"><span>∑ الرموز الرياضية <small>اضغط داخل خانة السؤال أو الخيار ثم اختر الرمز</small></span><b class="mxp-tg">${innerWidth<760?'＋':'－'}</b></div><div class="mxp-body">${GROUPS.map(([n,l])=>`<div class="mxp-grp"><h5>${n}</h5><div>${l.map(x=>{const [lab,val]=Array.isArray(x)?x:[x,x];return `<button type="button" class="${/^[a-z]{2,}/i.test(lab)&&lab.length>2?'w':''}" data-ins="${esc(val)}" title="${esc(lab)}">${esc(lab)}</button>`}).join('')}</div></div>`).join('')}</div>`;
   bar.querySelector('.mxp-head').onclick=()=>{bar.classList.toggle('closed');bar.querySelector('.mxp-tg').textContent=bar.classList.contains('closed')?'＋':'－'};
-  bar.querySelectorAll('[data-ins]').forEach(b=>{b.addEventListener('mousedown',e=>e.preventDefault());b.addEventListener('click',()=>ins(b.dataset.ins))})};
- document.addEventListener('focusin',e=>{if(e.target.closest&&e.target.closest('#questions')&&/TEXTAREA|INPUT/.test(e.target.tagName)&&e.target.type!=='file'&&e.target.type!=='radio')window.lastExamField=e.target},true);
+  bar.querySelectorAll('[data-ins]').forEach(b=>{['mousedown','pointerdown','touchstart'].forEach(ev=>b.addEventListener(ev,e=>{if(e.cancelable)e.preventDefault()},{passive:false}));b.addEventListener('pointerup',e=>{b._pu=Date.now();ins(b.dataset.ins)});b.addEventListener('click',()=>{if(Date.now()-(b._pu||0)>400)ins(b.dataset.ins)})})};
+ ['focusin','click','input','keyup'].forEach(ev=>document.addEventListener(ev,e=>{const t=e.target;if(t&&t.closest&&t.closest('#questions')&&/TEXTAREA|INPUT/.test(t.tagName)&&!['file','radio','checkbox','hidden','number'].includes(t.type))window.lastExamField=t},true));
  /* ===== 2) وسائط السؤال: صوت، صورة، فيديو، صور الخيارات ===== */
  const MAXV=6*1024*1024;
  const ytEmbed=u=>{const m=String(u).match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{6,})/);return m?'https://www.youtube.com/embed/'+m[1]:null};
@@ -3449,5 +3465,156 @@ table.gs{width:100%;border-collapse:collapse;min-width:0!important;font-size:14p
  function relabel(){const b=document.querySelector('.sidebar .nav[data-view="homework"]');if(!b)return;const r=role();const n=r==='student'?'واجباتي':r==='parent'?'واجبات ابني':'الواجبات';const ico=b.querySelector('.ico');b.textContent='';b.appendChild(ico);b.appendChild(document.createTextNode(n))}
  const _ar=window.applyRole;if(_ar)window.applyRole=function(){_ar.apply(this,arguments);try{relabel()}catch(e){}};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,60));else setTimeout(init,60);
+})();
+</script>
+<style id="quick-entry-styles">
+.lg-dialog .lg-form{display:none!important}
+.lg-sub2{margin:14px 0 6px;font-weight:800;color:#5A1C5E;font-size:14px;text-align:center}
+.lg-admins{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:6px}
+.lg-admins button{border:1.5px solid #E3CFE6;background:#fff;border-radius:14px;padding:12px 10px;font:800 14px Tajawal,Tahoma,sans-serif;color:#5A1C5E;cursor:pointer}
+.lg-admins button:hover{background:#84298A;color:#fff;border-color:#84298A}
+.lg-roles button.sel{outline:3px solid #E58A23}
+</style>
+<script id="quick-entry-script">
+(function(){
+ const ADM=[['principal','مدير المدرسة'],['financial','الإدارة المالية'],['tech_deputy','الوكيل الفني'],['student_affairs','شؤون الطلاب'],['supervisor','المشرف التعليمي'],['social_worker','الأخصائي الاجتماعي'],['floor_supervisor','مشرف الدور']];
+ const store=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return []}};
+ function go(page){try{enterPlatform(page)}catch(e){try{location.hash='';location.reload()}catch(_){}}}
+ function enter(role,sub){try{['wataniya_student_session_v1','wataniya_parent_session_v1','wataniya_exam_session_v1'].forEach(k=>localStorage.removeItem(k))}catch(e){}
+  const st=store('wataniya_students_v1');
+  if(role==='student'){const x=st.find(s=>String(s.id)==='9')||st[0]||{name:'سارة محمد',id:'9',grade:'الخامس',branch:'المركز الرئيسي'};localStorage.setItem(studentSessionKey,JSON.stringify({name:x.name,id:x.id,grade:x.grade,branch:x.branch,key:normId(x.id)+'|'+normId(x.name)}));go('students');return}
+  if(role==='parent'){const x=st.find(s=>String(s.id)==='55')||st[0]||{id:'55',phone:'777123456'};localStorage.setItem('wataniya_parent_session_v1',JSON.stringify({id:x.id,phone:x.phone||'777123456'}));go('parents');try{['parent-follow-id','parent-res-id'].forEach(i=>{const e=document.getElementById(i);if(e)e.value=x.id});['parent-follow-phone','parent-res-phone'].forEach(i=>{const e=document.getElementById(i);if(e)e.value=x.phone});showSub('parent-follow');parentFollow()}catch(e){}return}
+  if(role==='teacher'){const T=store('wataniya_teachers_v1');const t=T.find(x=>String(x.phone)==='777000111')||T[0]||{name:'أ. علي سالم',phone:'777000111',email:'ali@school.ye',subject:'الرياضيات',grades:'الخامس، السادس'};localStorage.setItem(examSessionKey,JSON.stringify({role:'teacher',contact:normalizeContact(t.phone||t.email),name:t.name,phone:t.phone,email:t.email,subject:t.subject,grades:t.grades}));go('exams');try{showExamArea('teacher',JSON.parse(localStorage.getItem(examSessionKey)))}catch(e){}return}
+  if(role==='admin'){const S=store('wataniya_staff_v1');const u=S.find(x=>x.role===sub);localStorage.setItem(examSessionKey,JSON.stringify({role:sub,name:u?u.name:(ADM.find(a=>a[0]===sub)||[,'الإدارة'])[1],contact:u?u.contact:sub+'@school.ye'}));go('support');try{renderTeachers();renderResultApprovals();renderSettingsTeacherList()}catch(e){}}}
+ window.quickEnter=enter;
+ document.addEventListener('click',e=>{const b=e.target.closest('.lg-roles button[data-role]');if(!b)return;e.stopImmediatePropagation();e.preventDefault();const r=b.dataset.role;
+  document.querySelectorAll('.lg-roles button').forEach(x=>x.classList.toggle('sel',x===b));
+  const dlg=b.closest('.lg-dialog');let box=dlg.querySelector('.lg-admin-pick');
+  if(r!=='admin'){box&&box.remove();enter(r);return}
+  if(!box){box=document.createElement('div');box.className='lg-admin-pick';box.innerHTML='<p class="lg-sub2">اختر الصفة</p><div class="lg-admins">'+ADM.map(([k,n])=>`<button type="button" data-adm="${k}">${n}</button>`).join('')+'</div>';dlg.querySelector('.lg-roles').after(box)}},true);
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-adm]');if(!b)return;enter('admin',b.dataset.adm)});
+ const _ol=window.openLogin;if(_ol)window.openLogin=function(){const r=_ol.apply(this,arguments);try{document.querySelector('.lg-admin-pick')?.remove();document.querySelectorAll('.lg-roles button').forEach(x=>x.classList.remove('sel'));const p=document.querySelector('.lg-sub');if(p)p.textContent='اختر نوع المستخدم للدخول مباشرة'}catch(e){}return r};
+})();
+</script>
+<style id="v73-styles">
+.of{position:relative;background:#fff;border:2px solid #C9B6E4;border-radius:6px;padding:12px 12px 8px;margin:0 auto 14px;max-width:720px;box-shadow:0 8px 24px #5a1c5e12;font-family:Tajawal,Tahoma,sans-serif;color:#1d1a3a;border-inline-start:10px solid #F6EE8F;border-inline-end:10px solid #E4DAF2}
+.of-print{display:block;margin:0 0 8px;margin-inline-start:auto;border:0;background:#84298A;color:#fff;border-radius:8px;padding:5px 10px;font-weight:800;font-size:12px;cursor:pointer;z-index:2}
+.of-hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.of-logo{width:70px;height:70px;object-fit:contain;border:2px solid #E8D96B;border-radius:4px;background:#fff}
+.of-ttl{flex:1;text-align:center;display:grid;gap:4px;justify-items:center}
+.of-name{background:#FBF59A;border:1.5px solid #C9B84A;color:#84298A;font-weight:800;font-size:18px;padding:3px 26px;min-width:60%}
+.of-sub1{font-weight:800;font-size:15px;color:#1d1a3a}.of-sub2{font-weight:800;font-size:13.5px}
+.of-info{display:grid;gap:6px;justify-items:center;margin:8px 0}
+.of-box{border:1.5px solid #C9B6E4;padding:3px 14px;font-size:13.5px;font-weight:700;color:#1d3a8a;min-width:70%;text-align:center}.of-box b{color:#84298A}
+.of-pink{background:#FBEFF8}.of-yel{background:#FBF7C9;min-width:55%}.of-seat{margin-inline-start:14px}
+.of-body{display:flex;gap:10px;align-items:flex-start}
+.of-tw{flex:1;overflow-x:auto}
+.of-tb{width:100%;border-collapse:collapse;min-width:0!important;font-size:12.5px;border:2px solid #4b3a8a}
+.of-tb th,.of-tb td{border:1px solid #6b5aa8;padding:4px 5px;text-align:center;white-space:nowrap}
+.of-tb thead th{background:#F3EEFB;color:#1d3a8a;font-weight:800}.of-tb thead .of-sub{background:#fff}
+.of-tb .of-mx th{color:#1d3a8a}
+.of-tb tbody th.of-sub{background:#FBF59A;color:#1d1a3a;font-weight:800;text-align:center}
+.of-tb td{font-weight:800;color:#1d1a3a;background:#fff}
+.of-tb .of-t{background:#EAD9F3}.of-tb td.of-t{background:#F3E4F8}
+.of-tb td.low{color:#C0262E}
+.of-num span{display:inline-grid;place-items:center;min-width:22px;height:22px;border:1.5px solid #C0262E;border-radius:50%;padding:0 3px}
+.of-w{font-size:11.5px;font-weight:700!important}
+.of-side{display:grid;gap:10px;width:118px;flex:0 0 118px}
+.of-side div{display:grid;gap:2px}
+.of-side b{justify-self:start;background:#EAD9F3;color:#84298A;font-size:12.5px;padding:1px 8px;border:1px solid #C9B6E4;border-radius:4px}
+.of-side span{border:2px solid #8a7ab8;border-radius:4px;padding:4px;text-align:center;font-weight:800;color:#1d3a8a;font-size:14px;min-height:20px}
+.of-miss{margin-top:6px;background:#FFF8EE;color:#7A4108;font-weight:700;font-size:12px;padding:4px 8px;border-radius:6px}
+.of-ft{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.of-fb{border:1.5px solid #8a7ab8;border-radius:12px;padding:16px 8px 8px;position:relative;min-height:66px;text-align:center}
+.of-fb b{position:absolute;top:-10px;right:50%;transform:translateX(50%);background:#CFE8F5;color:#9a1c1c;font-size:12px;padding:1px 8px;border:1px solid #8ab4cc;white-space:nowrap}
+.of-fb p{margin:4px 0 0;font-weight:800;font-size:13px;color:#1d1a3a;line-height:1.6}.of-fb .of-pr{color:#1d3a8a;margin-top:12px}.of-sign{color:#8a7f95;font-weight:600!important}
+.of-note{margin-top:8px;color:#C0262E;font-size:11px;font-weight:700;text-align:center}
+.of-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}.of-tabs button{border:1.5px solid #E9DFEE;background:#fff;border-radius:30px;padding:8px 14px;font-weight:800;font-size:13px;color:#5A1C5E;cursor:pointer}.of-tabs button.on{background:#84298A;border-color:#84298A;color:#fff}
+.of-grid{display:grid;gap:12px}
+.of-tool{margin-bottom:16px}
+@media(max-width:640px){.of{padding:10px 6px 6px;border-inline-start-width:6px;border-inline-end-width:6px}.of-body{flex-direction:column}.of-side{width:100%;flex:none;grid-template-columns:repeat(4,1fr);gap:6px}.of-side b{justify-self:center;font-size:11px;padding:1px 4px}.of-side span{font-size:12px}.of-name{font-size:15px;padding:3px 12px}.of-sub1{font-size:13px}.of-logo{width:52px;height:52px}.of-box{min-width:0;width:100%;box-sizing:border-box;font-size:12.5px}.of-ft{grid-template-columns:1fr 1fr 1fr;gap:6px}.of-fb p{font-size:11.5px}.of-tb{font-size:11.5px}.of-tb th,.of-tb td{padding:3px 3px}.of-seat{display:block;margin:0}}
+.tres-row2{background:#fff;border:1.5px solid #EFE6F2;border-radius:14px;padding:10px 12px;display:grid;gap:8px}
+.tres-row2.bad{border-color:#C0262E}.tres-row2.lock{opacity:.6}
+.tr-who b{font-size:14.5px;color:#2A2233}.tr-who small{display:block;color:#6b5f78;font-weight:700;font-size:12px}
+.tr-ins{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;align-items:end}
+.tr-ins label{display:grid;gap:4px;font-weight:800;font-size:12px;color:#5A1C5E}.tr-ins label em{font-style:normal;color:#8a7f95;font-weight:700}
+.tr-ins input{width:100%!important;min-width:0!important;text-align:center;font-weight:800;padding:8px 4px!important;box-sizing:border-box}
+.tr-tot{background:#F5EAF6;border-radius:10px;padding:6px 8px;text-align:center;display:grid}.tr-tot span{font-size:11.5px;color:#5A1C5E;font-weight:800}.tr-tot b{color:#84298A;font-size:14px}
+</style>
+<script id="v73-script">
+(function(){
+ const $=id=>document.getElementById(id);
+ const KEY='wataniya_published_results';
+ const PERIODS=['الشهر الأول','الشهر الثاني','الشهر الثالث','نصف العام','الشهر الرابع','الشهر الخامس','آخر العام'];
+ const MONTHS=window.PERIOD_MONTH||{'الشهر الأول':'سبتمبر','الشهر الثاني':'أكتوبر','الشهر الثالث':'نوفمبر','الشهر الرابع':'فبراير','الشهر الخامس':'مارس'};
+ const ptype=p=>p==='نصف العام'?'mid':p==='آخر العام'?'final':'month';
+ const gradeOf=p=>p>=90?'ممتاز':p>=80?'جيد جداً':p>=65?'جيد':p>=50?'مقبول':'ضعيف';
+ const role=()=>{try{return currentRole()}catch(e){return 'guest'}};
+ /* ===== تحويل الرقم إلى كتابة ===== */
+ const ONES=['صفر','واحد','اثنان','ثلاثة','أربعة','خمسة','ستة','سبعة','ثمانية','تسعة','عشرة','أحد عشر','اثنا عشر','ثلاثة عشر','أربعة عشر','خمسة عشر','ستة عشر','سبعة عشر','ثمانية عشر','تسعة عشر'];
+ const TENS=['','','عشرون','ثلاثون','أربعون','خمسون','ستون','سبعون','ثمانون','تسعون'];
+ function words(n){n=+n;if(isNaN(n))return '';const half=Math.abs(n%1-0.5)<0.01;const i=Math.floor(n);let w;
+  if(i<20)w=ONES[i];else if(i<100){const t=Math.floor(i/10),o=i%10;w=o?ONES[o]+' و'+TENS[t]:TENS[t]}else if(i===100)w='مائة';else if(i<200){w='مائة و'+words(i-100)}else w=String(i);
+  if(half)w=(i===0?'':w+' و')+'نصف';return w}
+ window.numberWords=words;
+ /* ===== أدوات ===== */
+ const yearOf=r=>{const d=new Date(r.submittedAt||Date.now());const y=d.getFullYear(),m=d.getMonth()+1;return m>=8?[y,y+1]:[y-1,y]};
+ const gradeLabel=r=>{const g=r.grade||'';return /ثانوي|KJ/.test(g)?g:g+' الأساسي'};
+ function principal(){try{const u=readStore('wataniya_staff_v1').find(x=>x.role==='principal');return u?u.name.replace(/^أ\s*\/\s*/,''):'محمد الحاتمي'}catch(e){return 'محمد الحاتمي'}}
+ function rankOf(r){const all=readStore(KEY).filter(x=>x.status==='approved'&&x.grade===r.grade&&x.period===r.period&&(x.marks||[]).length);const tot=x=>(x.marks||[]).reduce((a,m)=>a+(+m.mark||0),0);const mine=tot(r);if(!all.some(x=>normId(x.identifier)===normId(r.identifier)))return '—';return 1+all.filter(x=>tot(x)>mine).length}
+ const fmt=v=>v==null||v===''?'':(Math.round(v*100)/100);
+ /* ===== نموذج الإخطار الرسمي ===== */
+ window.officialForm=function(r,o={}){const t=ptype(r.period),[y1,y2]=yearOf(r),subs=resultSubjects(r.grade);const mk=sj=>(r.marks||[]).find(m=>m.subject===sj);
+  const total=(r.marks||[]).reduce((a,m)=>a+(+m.mark||0),0),full=(r.max||100)*subs.length,avg=full?total/full*100:0,done=(r.marks||[]).length;
+  const title=t==='month'?`إخطار بنتيجة الطالب لشهر ( ${MONTHS[r.period]||r.period} )`:t==='mid'?'إخطار بنتيجة الطالب للفصل الدراسي الأول':`إخطار بنتيجة الطالب للعام الدراسي ${y1} / ${y2} م`;
+  let head,rows;
+  if(t==='month'){head=`<tr><th class="of-sub" rowspan="2">المواد<br>الدراسية</th><th>مواظبة</th><th>واجبات</th><th>شفوي</th><th>تحريري</th><th class="of-t">المجموع</th><th class="of-t">المتوسط</th></tr><tr class="of-mx"><th>20</th><th>20</th><th>20</th><th>40</th><th class="of-t">100%</th><th class="of-t">20%</th></tr>`;
+   rows=subs.map(sj=>{const m=mk(sj),p=(m&&m.parts)||{};const tot=m?+m.mark:0;return `<tr><th class="of-sub">${esc(sj)}</th><td>${fmt(p.att)}</td><td>${fmt(p.hw)}</td><td>${fmt(p.oral)}</td><td>${fmt(p.written)}</td><td class="of-t ${m&&tot<50?'low':''}">${m?fmt(tot):'0'}</td><td class="of-t">${m?fmt(tot/5):'0'}</td></tr>`}).join('')}
+  else if(t==='mid'){head=`<tr><th class="of-sub" rowspan="2">المواد<br>الدراسية</th><th rowspan="2">المحصلة<br>الفصل<br>20%</th><th rowspan="2">نهاية<br>الفصل<br>30%</th><th class="of-t" colspan="2">المجموع 50%</th></tr><tr class="of-mx"><th class="of-t">رقماً</th><th class="of-t">كتابة</th></tr>`;
+   rows=subs.map(sj=>{const m=mk(sj),p=(m&&m.parts)||{};const tot=m?+m.mark:0;return `<tr><th class="of-sub">${esc(sj)}</th><td>${fmt(p.coll)}</td><td>${fmt(p.fin)}</td><td class="of-t of-num ${m&&tot<25?'low':''}"><span>${fmt(tot)}</span></td><td class="of-t of-w">${words(tot)}</td></tr>`}).join('')}
+  else{head=`<tr><th class="of-sub" rowspan="2">المواد<br>الدراسية</th><th colspan="2">الفصل الأول</th><th colspan="2">الفصل الثاني</th><th class="of-t" colspan="2">المجموع 100%</th></tr><tr class="of-mx"><th>محصلة<br>20%</th><th>نهاية<br>30%</th><th>محصلة<br>20%</th><th>نهاية<br>30%</th><th class="of-t">رقماً</th><th class="of-t">كتابة</th></tr>`;
+   rows=subs.map(sj=>{const m=mk(sj),p=(m&&m.parts)||{};const tot=m?+m.mark:0;return `<tr><th class="of-sub">${esc(sj)}</th><td>${fmt(p.s1c)}</td><td>${fmt(p.s1f)}</td><td>${fmt(p.s2c)}</td><td>${fmt(p.s2f)}</td><td class="of-t of-num ${m&&tot<50?'low':''}"><span>${fmt(tot)}</span></td><td class="of-t of-w">${words(tot)}</td></tr>`}).join('')}
+  const oc=r.outcome;const note=t==='final'&&oc?(oc.state==='fail'?`راسب في: ${oc.failed.join('، ')}`:oc.state==='grad'?'ناجح — أتمّ المرحلة الثانوية':`ناجح ومنقول إلى الصف ${oc.to}`):(r.adminNote||(avg>=90?'ممتاز .. واصل تفوقك':avg>=65?'أحسنت .. ويمكنك الأفضل':'لا تهمل المذاكرة وستتفوق .. حاول وسترى'));
+  const foot=t==='month'?'ملاحظة: يرجى المحافظة على هذه النتيجة وإعادتها إلى المدرسة بعد اطلاع ولي الأمر والتوقيع عليها وإبداء ملاحظاته إن وجدت.':'ملاحظة: هذا إخطار مؤقت بنتيجة الطالب ولا يغني عن الشهادة الكرتونية المعدة من إدارة المدرسة.';
+  const logo=localStorage.getItem('wataniya_school_logo')||(typeof DEFAULT_SCHOOL_LOGO!=='undefined'?DEFAULT_SCHOOL_LOGO:'');
+  return `<div class="of ${'of-'+t}">${o.noPrint?'':'<button type="button" class="of-print" onclick="printOfficial(this)">🖨 طباعة</button>'}
+  <div class="of-hd"><div class="of-ttl"><div class="of-name">المدرسة الوطنية الأهلية</div><div class="of-sub1">${title}</div>${t==='final'?'':`<div class="of-sub2">${t==='mid'?'للعام الدراسي':'العام الدراسي'} ${y1} / ${y2} م</div>`}</div>${logo?`<img class="of-logo" src="${logo}" alt="شعار المدرسة">`:''}</div>
+  <div class="of-info"><div class="of-box of-pink"><b>الاسم/</b> ${esc(r.name)}${t==='month'?'':` <span class="of-seat"><b>رقم الجلوس</b> ( ${esc(r.identifier)} )</span>`}</div><div class="of-box of-yel"><b>الصف/</b> ${esc(gradeLabel(r))} &nbsp;&nbsp; <b>الشعبة/</b> ( ${esc(r.section||'1')} )</div></div>
+  <div class="of-body"><div class="of-tw"><table class="of-tb"><thead>${head}</thead><tbody>${rows}</tbody></table></div>
+  <div class="of-side"><div><b>المجموع</b><span>${fmt(total)}</span></div><div><b>الترتيب</b><span>${rankOf(r)}</span></div><div><b>المعدل</b><span>${avg.toFixed(2)} %</span></div><div><b>التقدير</b><span>${done?gradeOf(avg):''}</span></div></div></div>
+  ${done<subs.length?`<div class="of-miss">لم تُرصد بعد: ${subs.filter(sj=>!mk(sj)).map(esc).join('، ')}</div>`:''}
+  <div class="of-ft"><div class="of-fb"><b>ملاحظات الإدارة</b><p>${esc(note)}</p></div><div class="of-fb"><b>ملاحظات ولي الأمر</b><p class="of-sign">............................<br><small>التوقيع:</small></p></div><div class="of-fb"><b>مدير المدرسة</b><p class="of-pr">أ/ ${esc(principal())}</p></div></div>
+  <div class="of-note">* ${foot}</div></div>`};
+ const css=()=>[...document.querySelectorAll('style')].map(x=>x.outerHTML).join('');
+ function printHTML(inner,landscape){const f=document.createElement('iframe');f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';document.body.appendChild(f);const d=f.contentDocument;d.open();d.write(`<html dir="rtl" lang="ar"><head><meta charset="utf-8">${css()}<style>@page{size:A4 ${landscape?'landscape':'portrait'};margin:8mm}body{background:#fff;margin:0;font-family:Tajawal,Tahoma,sans-serif}.of-print{display:none!important}.of-page{display:grid;grid-template-columns:${landscape?'1fr 1fr':'1fr'};gap:8mm;page-break-after:always;break-after:page}.of-page:last-child{page-break-after:auto}.of{box-shadow:none!important;margin:0!important;max-width:none!important}</style></head><body>${inner}</body></html>`);d.close();setTimeout(()=>{try{f.contentWindow.focus();f.contentWindow.print()}catch(e){}setTimeout(()=>f.remove(),1500)},400)}
+ window.printOfficial=function(btn){const of=btn.closest('.of');printHTML(`<div class="of-page" style="max-width:190mm;margin:auto">${of.outerHTML}</div>`,false)};
+ /* ===== صفحة النتائج للطالب وولي الأمر بالنموذج الرسمي ===== */
+ const _rr=window.renderResultsPage;window.renderResultsPage=function(){_rr();const r=role();const box=$('published-results');if(!box)return;
+  if(r==='student'||r==='parent'){const s=readJsonLocal(r==='student'?studentSessionKey:'wataniya_parent_session_v1',{});if(box.querySelector('.acc-lock')||(window.isBlocked&&isBlocked(s.id,'results')))return;
+   const rows=readStore(KEY).filter(x=>x.status==='approved'&&x.published&&normId(x.identifier)===normId(s.id)&&(r==='student'||(x.parentPhone&&normPhone(x.parentPhone)===normPhone(s.phone)))).sort((a,b)=>PERIODS.indexOf(a.period)-PERIODS.indexOf(b.period));
+   if(!rows.length){box.innerHTML='<p class="muted-note">لا توجد نتائج معتمدة حتى الآن.</p>';return}
+   const last=rows.length-1;box.innerHTML=`<h3 style="margin:0 0 10px;color:#5A1C5E">${r==='student'?'نتائجي':'نتائج ابني — '+esc(rows[0].name)}</h3><div class="of-tabs">${rows.map((x,i)=>`<button type="button" class="${i===last?'on':''}" data-of="${i}">${esc(MONTHS[x.period]?x.period+' ('+MONTHS[x.period]+')':x.period)}</button>`).join('')}</div><div class="of-panes">${rows.map((x,i)=>`<div class="of-pane" data-of="${i}" ${i===last?'':'hidden'}>${officialForm(x)}</div>`).join('')}</div>`;return}
+  if(r==='admin')adminPrintTool(box)};
+ document.addEventListener('click',e=>{const b=e.target.closest('.of-tabs [data-of]');if(!b)return;const w=b.closest('.of-tabs');w.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));w.nextElementSibling.querySelectorAll('.of-pane').forEach(p=>p.hidden=p.dataset.of!==b.dataset.of)});
+ /* ===== طباعة إخطارات صف كامل (الإدارة) ===== */
+ function adminPrintTool(box){if(box.querySelector('#of-tool'))return;const t=document.createElement('div');t.id='of-tool';t.className='panel of-tool';const gs=[...new Set(readStore(KEY).filter(x=>x.status==='approved').map(x=>x.grade))];
+  t.innerHTML=`<h3>طباعة إخطارات النتائج بنموذج المدرسة</h3><p class="muted-note">اختر الصف والفترة لطباعة إخطارات جميع طلاب الصف (نموذجان في كل صفحة)، أو معاينتها هنا.</p><div class="form-grid"><select id="of-g">${(gs.length?gs:allGrades).map(g=>`<option>${esc(g)}</option>`).join('')}</select><select id="of-p">${PERIODS.map(p=>`<option value="${p}">${MONTHS[p]?p+' ('+MONTHS[p]+')':p}</option>`).join('')}</select></div><div class="sc-btns"><button type="button" id="of-prev">معاينة</button><button type="button" id="of-print-all">🖨 طباعة الإخطارات</button></div><div id="of-out"></div>`;box.prepend(t);
+  const sel=()=>readStore(KEY).filter(x=>x.status==='approved'&&x.grade===$('of-g').value&&x.period===$('of-p').value).sort((a,b)=>String(a.name).localeCompare(b.name,'ar'));
+  $('of-prev').onclick=()=>{const l=sel();$('of-out').innerHTML=l.length?`<p class="muted-note">${nStudents(l.length)}</p><div class="of-grid">${l.map(x=>officialForm(x)).join('')}</div>`:'<p class="muted-note">لا توجد نتائج معتمدة لهذا الصف في هذه الفترة.</p>'};
+  $('of-print-all').onclick=()=>{const l=sel();if(!l.length){alert('لا توجد نتائج معتمدة لهذا الصف في هذه الفترة.');return}let h='';for(let i=0;i<l.length;i+=2)h+=`<div class="of-page">${l.slice(i,i+2).map(x=>officialForm(x,{noPrint:true})).join('')}</div>`;printHTML(h,true)}}
+ /* ===== تحديث البيانات الافتراضية لتطابق النموذج ===== */
+ function seedV3(){try{if(!localStorage.getItem('wataniya_results_v3')){
+  let seed=7;const rnd=(a,b)=>{seed=(seed*9301+49297)%233280;return a+Math.round(seed/233280*(b-a)*2)/2};
+  const ros=JSON.parse(localStorage.getItem('wataniya_students_v1')||'[]');if(!ros.length)return;const five=ros.filter(x=>x.grade==='الخامس'),six=ros.filter(x=>x.grade==='السادس');
+  const subs=resultSubjects('الخامس');const at=new Date().toISOString();const out=[];
+  const mk=(x,p,st)=>{const t=ptype(p);const lvl=x.id=='55'?0.9:x.id=='9'?0.95:0.6+((+String(x.id).replace(/\D/g,'')||3)%4)*0.09;const marks=subs.map(sj=>{let parts;if(t==='month'){parts={att:Math.min(20,rnd(17,20)),hw:Math.min(20,Math.round(20*lvl*2)/2+rnd(-1,1)),oral:Math.min(20,Math.round(20*lvl*2)/2+rnd(-1.5,1)),written:Math.min(40,Math.round(40*lvl*2)/2+rnd(-3,2))}}else{parts={coll:Math.min(20,Math.round(20*lvl*2)/2+rnd(-1,0.5)),fin:Math.min(30,Math.round(30*lvl*2)/2+rnd(-3,1))}}Object.keys(parts).forEach(k=>parts[k]=Math.max(0,parts[k]));return {subject:sj,mark:Object.values(parts).reduce((a,b)=>a+b,0),parts}});
+   return {branch:x.branch,name:x.name,identifier:x.id,section:'1',stage:'basic',grade:x.grade,parentPhone:x.phone,period:p,max:t==='mid'?50:100,marks,status:st,published:st==='approved',submittedBy:'777000111',submittedAt:at,teachers:['777000111']}};
+  five.forEach(x=>{['الشهر الأول','الشهر الثاني','الشهر الثالث','نصف العام'].forEach(p=>out.push(mk(x,p,'approved')))});
+  const sara=five.find(x=>String(x.id)==='9');if(sara)out.push(mk(sara,'الشهر الرابع','pending'));
+  six.slice(0,3).forEach(x=>out.push(mk(Object.assign({},x),'الشهر الأول','pending')));
+  out.forEach(r=>r.result=(window.resultSummary?resultSummary(r):r.period));
+  localStorage.setItem(KEY,JSON.stringify(out));localStorage.setItem('wataniya_results_v3','1')}}catch(e){console.error(e)}}
+ seedV3();document.addEventListener('DOMContentLoaded',()=>setTimeout(seedV3,80));
+ /* ===== نموذج الإدارة القديم: الدرجة العظمى حسب نموذج المدرسة ===== */
 })();
 </script>
